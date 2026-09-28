@@ -1,0 +1,57 @@
+name: Build FootScore CI APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Télécharger le projet
+        uses: actions/checkout@v4
+
+      - name: Extraire le projet Android
+        run: |
+          unzip -q FootScoreCI_Complete_1.1.0_recreated-3.zip -d source
+          echo "Projet extrait"
+          find source -type f -name "settings.gradle.kts" -o -name "settings.gradle"
+
+      - name: Installer Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Installer Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Installer Android SDK 36
+        run: |
+          sdkmanager "platforms;android-36"
+          sdkmanager "build-tools;36.0.0"
+
+      - name: Installer Gradle 8.9
+        run: |
+          wget -q https://services.gradle.org/distributions/gradle-8.9-bin.zip
+          unzip -q gradle-8.9-bin.zip
+          echo "$PWD/gradle-8.9/bin" >> "$GITHUB_PATH"
+
+      - name: Trouver le projet Android
+        run: |
+          ANDROID_DIR=$(find source -type f \( -name "settings.gradle.kts" -o -name "settings.gradle" \) | head -1 | xargs dirname)
+          echo "ANDROID_DIR=$ANDROID_DIR" >> "$GITHUB_ENV"
+          echo "Projet Android : $ANDROID_DIR"
+
+      - name: Compiler l'application
+        working-directory: ${{ env.ANDROID_DIR }}
+        run: gradle --no-daemon assembleDebug
+
+      - name: Récupérer l'APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FootScore-CI-APK
+          path: '**/build/outputs/apk/debug/*.apk'
+          if-no-files-found: error
