@@ -26,7 +26,7 @@ jobs:
           java-version: '17'
 
       - name: Installer Android SDK
-        uses: android-actions/setup-android@v3
+        uses: uses: android-actions/setup-android@v4
 
             - name: Installer Android SDK 36
         run: |
