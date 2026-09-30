@@ -31,7 +31,8 @@ jobs:
             - name: Installer Android SDK 36
         run: |
           sdkmanager "platforms;android-36"
-                - name: Installer Android SDK 36
+                        run: |
+          sdkmanager "build-tools;35.0.0"
         run: |
           sdkmanager "build-tools;35.0.0"
 
