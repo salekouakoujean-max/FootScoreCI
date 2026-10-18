@@ -25,6 +25,13 @@ jobs:
           PROJECT="source/FootScoreCI_Complete_1.1.0_recreated/android"
           grep -RIl '2.0.21' "$PROJECT" --include='*.gradle.kts' --include='*.toml' | xargs -r sed -i 's/2.0.21/2.3.0/g'
 
+      - name: Configurer l'adresse du serveur
+        run: |
+          PROJECT="source/FootScoreCI_Complete_1.1.0_recreated/android"
+          HTML=$(find "$PROJECT/app/src/main/assets" -type f -name 'index.html' | head -n 1)
+          test -n "$HTML"
+          sed -i 's#https://YOUR-SERVER-DOMAIN.example#https://footscore-ci-server.onrender.com#g' "$HTML"
+
       - name: Installer Java 17
         uses: actions/setup-java@v5
         with:
