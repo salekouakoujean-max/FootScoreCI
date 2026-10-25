@@ -1,4 +1,3 @@
-
 import express from 'express';
 
 const app = express();
@@ -28,9 +27,11 @@ async function proxy(path, res) {
   }
 
   try {
-    const response = await fetch(UPSTREAM + path, {
+    const url = new URL(UPSTREAM + path);
+    url.searchParams.set('api_key', KEY);
+
+    const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${KEY}`,
         Accept: 'application/json'
       }
     });
@@ -63,17 +64,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Matchs du jour : conserver la route qui fonctionne déjà.
 app.get('/api/matches', (req, res) => {
   proxy('/matches', res);
 });
 
-// L'application filtre les matchs en cours à partir des matchs reçus.
 app.get('/api/live-details', (req, res) => {
   proxy('/matches', res);
 });
 
-// Classement actuel de la Premier League anglaise.
 app.get('/api/standings', (req, res) => {
   proxy('/league_standings?league_id=lfa-premier-league&lang=en', res);
 });
@@ -81,3 +79,6 @@ app.get('/api/standings', (req, res) => {
 app.listen(PORT, () => {
   console.log(`FootScore CI server on port ${PORT}`);
 });
+
+
+
