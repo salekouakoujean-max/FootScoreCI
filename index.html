@@ -1,118 +1,211 @@
+
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#1565c0">
-  <title>FootScore CI</title>
-  <style>
-    :root{--blue:#1565c0;--bg:#f4f6fb;--text:#172033;--muted:#667085;--green:#16803c;--red:#c62828}
-    *{box-sizing:border-box}body{font-family:Arial,Helvetica,sans-serif;margin:0;background:var(--bg);color:var(--text)}
-    header{padding:20px 18px 22px;background:var(--blue);color:#fff}header h1{font-size:30px;margin:0 0 8px}header p{font-size:17px;margin:0}
-    main{max-width:900px;margin:0 auto;padding:16px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-    .tabs button{font-size:15px;padding:12px 15px;border:0;border-radius:12px;background:#fff;color:var(--text);cursor:pointer}
-    .tabs button.active{background:var(--blue);color:#fff}.notice,.card{background:#fff;border-radius:14px;padding:15px;margin:10px 0;box-shadow:0 2px 7px #10182812}
-    .muted{color:var(--muted)}.league{font-size:14px;font-weight:bold;color:#475467;padding:10px 4px 3px}
-    .match{background:#fff;border-radius:13px;padding:13px;margin:7px 0;box-shadow:0 1px 4px #10182812}
-    .teams{display:grid;grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr);gap:8px;align-items:center}
-    .team{font-weight:600;overflow-wrap:anywhere}.team.away{text-align:right}.score{text-align:center;font-size:18px;font-weight:bold;white-space:nowrap}
-    .meta{display:flex;justify-content:space-between;gap:8px;margin-top:9px;font-size:12px;color:var(--muted)}
-    .live{color:var(--red);font-weight:bold}.status{color:var(--muted)}.table-wrap{overflow-x:auto}.standings{width:100%;border-collapse:collapse;background:#fff;border-radius:10px;overflow:hidden;font-size:13px}.standings th,.standings td{padding:10px 8px;border-bottom:1px solid #eaecf0;text-align:left;white-space:nowrap}.standings th{background:#eef4ff}.standings td:first-child,.standings th:first-child{text-align:center}
-    .retry{background:var(--blue);color:#fff;border:0;border-radius:9px;padding:10px 14px;margin-top:8px;font-size:14px}.small{font-size:12px}.loading{padding:24px;text-align:center;color:var(--muted)}
-    pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}.empty{text-align:center;padding:22px;color:var(--muted)}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#071b35">
+<title>FootScore CI</title>
+<style>
+:root{--navy:#071b35;--blue:#1265d8;--bg:#eef2f7;--text:#152238;--muted:#6b778c;--red:#d9303e;--line:#e4e9f1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+header{background:linear-gradient(135deg,#071b35,#123f77);color:white;padding:22px 17px 18px}
+.top{max-width:960px;margin:auto;display:flex;align-items:center;gap:12px}
+.ball{font-size:35px}
+header h1{font-size:25px;margin:0 0 5px}
+header p{margin:0;color:#d7e7ff;font-size:14px}
+main{max-width:960px;margin:auto;padding:14px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:5px;margin-bottom:12px}
+.tabs button{flex:0 0 auto;border:1px solid var(--line);border-radius:10px;padding:11px 15px;background:white;color:#344054;font-weight:700;font-size:14px}
+.tabs button.active{background:var(--blue);border-color:var(--blue);color:white}
+.notice{background:white;border-radius:12px;padding:14px;margin:10px 0;box-shadow:0 2px 6px #0b1e3710}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.loading,.empty{text-align:center;padding:24px;color:var(--muted)}
+.league-group{background:#fff;border-radius:12px;margin:11px 0;overflow:hidden;box-shadow:0 2px 6px #0b1e370c}
+.league-head{display:flex;align-items:center;gap:10px;padding:13px 14px;background:#f9fbfe;border-bottom:1px solid var(--line);font-weight:700;cursor:pointer;list-style:none}
+.league-head::-webkit-details-marker{display:none}
+.league-head:after{content:'⌄';margin-left:auto;color:var(--muted);font-size:18px}
+.league-group[open]>.league-head:after{content:'⌃'}
+.league-name{flex:1}
+.league-count{font-size:11px;color:var(--muted);font-weight:600}
+.match{padding:13px 12px;border-bottom:1px solid #edf0f5}
+.match:last-child{border-bottom:0}
+.match-top{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:10px}
+.live-pill{color:var(--red);font-weight:800}
+.teams{display:grid;grid-template-columns:minmax(0,1fr) 72px minmax(0,1fr);gap:8px;align-items:center}
+.team{font-weight:700;font-size:14px;overflow-wrap:anywhere}
+.team.away{text-align:right}
+.score{text-align:center;font-size:19px;font-weight:800;white-space:nowrap}
+.table-wrap{overflow-x:auto}
+.standings{width:100%;border-collapse:collapse;background:#fff;font-size:13px}
+.standings th,.standings td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.standings th{background:#f0f5ff}
+.standings td:first-child,.standings th:first-child{text-align:center}
+.retry{background:var(--blue);color:#fff;border:0;border-radius:9px;padding:10px 14px;margin-top:10px;font-size:14px;font-weight:700}
+details.tech{margin-top:12px}
+details.tech pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px}
+@media(min-width:650px){main{padding:20px}.match{padding:15px 18px}.team{font-size:15px}}
+</style>
 </head>
 <body>
-<header><h1>⚽ FootScore CI</h1><p>Scores de football</p></header>
+<header>
+  <div class="top">
+    <div class="ball">⚽</div>
+    <div><h1>FootScore CI</h1><p>Les scores et matchs de football</p></div>
+  </div>
+</header>
 <main>
-  <nav class="tabs" aria-label="Rubriques">
-    <button class="active" data-tab="matches" onclick="loadTab('matches',this)">Aujourd'hui</button>
-    <button data-tab="live-details" onclick="loadTab('live-details',this)">Direct</button>
-    <button data-tab="standings" onclick="loadTab('standings',this)">Classements</button>
-  </nav>
-  <div id="content" aria-live="polite"><div class="notice loading">Chargement des matchs…</div></div>
+<nav class="tabs" aria-label="Rubriques">
+  <button class="active" data-tab="matches" onclick="loadTab('matches')">Aujourd'hui</button>
+  <button data-tab="live-details" onclick="loadTab('live-details')">🔴 Direct</button>
+  <button data-tab="standings" onclick="loadTab('standings')">Classements</button>
+</nav>
+<div id="content" aria-live="polite"><div class="notice loading">Chargement des matchs…</div></div>
 </main>
 <script>
-  // Adresse réelle du serveur FootScore CI
-  const BASE = 'https://footscore-ci-server.onrender.com';
-  const content = document.getElementById('content');
-  const labels = {matches:'Aujourd’hui', 'live-details':'Matchs en direct', standings:'Classements'};
+const BASE='https://footscore-ci-server.onrender.com';
+const content=document.getElementById('content');
+const labels={matches:'les matchs',"live-details":'les matchs en direct',standings:'les classements'};
+const leagueOrder=['Premier League','Bundesliga','La Liga','Serie A','Ligue 1','Champions League','Europa League','Conference League'];
 
-  function esc(value){return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
-  function pick(obj, keys, fallback=''){for(const key of keys){if(obj && obj[key] !== undefined && obj[key] !== null && obj[key] !== '') return obj[key];}return fallback;}
-  function getRoot(d){return d && d.data !== undefined ? d.data : d;}
-  function getMatches(d){
-    const root=getRoot(d);
-    if(Array.isArray(root)) return root;
-    for(const key of ['matches','fixtures','events','results']) if(root && Array.isArray(root[key])) return root[key];
-    if(root && root.data && Array.isArray(root.data.matches)) return root.data.matches;
-    return [];
+function esc(v){
+  return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function pick(o,keys,f=''){
+  for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&o[k]!=='')return o[k];
+  return f;
+}
+function rootOf(d){return d&&d.data!==undefined?d.data:d;}
+function getMatches(d){
+  const r=rootOf(d);
+  if(Array.isArray(r))return r;
+  for(const k of ['matches','fixtures','events','results'])if(r&&Array.isArray(r[k]))return r[k];
+  if(r&&r.data&&Array.isArray(r.data.matches))return r.data.matches;
+  return [];
+}
+function teamObj(m,side){
+  return m[side]||m[side+'_team']||m[side+'Team']||{};
+}
+function teamName(t){
+  if(typeof t==='string')return t;
+  return pick(t,['name','short_name','shortName','title','team_name'],'Équipe');
+}
+function scoreText(m){
+  const h=teamObj(m,'home'),a=teamObj(m,'away');
+  const hs=pick(h,['score','goals'],pick(m,['home_score','homeScore'],null));
+  const as=pick(a,['score','goals'],pick(m,['away_score','awayScore'],null));
+  return hs===null||as===null?'—':hs+' - '+as;
+}
+function statusText(m){
+  const s=m.status;
+  if(s&&typeof s==='object')return pick(s,['display','status','state','short'],'Programmé');
+  return s||m.time||m.kickoff||'Programmé';
+}
+function isLive(m){
+  const s=m.status;
+  return !!(s&&typeof s==='object'&&(s.is_live||s.live))||
+    /live|in.?play|1st half|2nd half|half time|mi-temps|1ère mi-temps|2ème mi-temps/i.test(String(typeof s==='object'?statusText(m):s||''));
+}
+function leagueName(m){
+  const l=m.league||m.competition||m.tournament||m.league_name;
+  return typeof l==='string'?l:pick(l,['name','title','competition_name'],'Autres matchs');
+}
+function rankLeague(name){
+  const n=String(name).toLowerCase();
+  const i=leagueOrder.findIndex(x=>n.includes(x.toLowerCase()));
+  return i<0?100:i;
+}
+function card(m){
+  const live=isLive(m);
+  const time=pick(m,['kickoff','time','date','start_time'],'');
+  return '<article class="match">'+
+    '<div class="match-top"><span class="'+(live?'live-pill':'')+'">'+
+    (live?'● EN DIRECT · ':'')+esc(statusText(m))+'</span><span>'+esc(time)+'</span></div>'+
+    '<div class="teams"><div class="team">'+esc(teamName(teamObj(m,'home')))+'</div>'+
+    '<div class="score">'+esc(scoreText(m))+'</div>'+
+    '<div class="team away">'+esc(teamName(teamObj(m,'away')))+'</div></div></article>';
+}
+function renderMatches(data,liveOnly){
+  let matches=getMatches(data);
+  if(liveOnly)matches=matches.filter(isLive);
+  if(!matches.length){
+    return '<div class="notice empty">'+
+      (liveOnly?'Aucun match en direct trouvé pour le moment.':'Aucun match trouvé dans la réponse du serveur.')+
+      '<br><button class="retry" onclick="loadTab(currentTab)">Actualiser</button></div>';
   }
-  function teamName(team){if(typeof team==='string')return team;return pick(team,['name','short_name','shortName','title'],'Équipe');}
-  function scoreText(match){
-    const home=match.home || match.home_team || match.homeTeam || {};
-    const away=match.away || match.away_team || match.awayTeam || {};
-    const hs=pick(home,['score','goals'],pick(match,['home_score','homeScore'],null));
-    const as=pick(away,['score','goals'],pick(match,['away_score','awayScore'],null));
-    return hs===null || as===null ? '—' : `${hs} - ${as}`;
+  const groups=new Map();
+  for(const m of matches){
+    const name=leagueName(m);
+    if(!groups.has(name))groups.set(name,[]);
+    groups.get(name).push(m);
   }
-  function statusText(match){
-    const s=match.status;
-    if(s && typeof s==='object') return pick(s,['display','status','state'],'Programmé');
-    return s || match.time || match.kickoff || 'Programmé';
-  }
-  function isLive(match){const s=match.status;return !!(s && typeof s==='object' && s.is_live) || /live|in.?play|1st half|2nd half|mi-temps/i.test(String(typeof s==='object'?statusText(match):s||''));}
-  function matchCard(match){
-    const home=match.home || match.home_team || match.homeTeam || {};
-    const away=match.away || match.away_team || match.awayTeam || {};
-    const league=match.league;
-    const leagueName=typeof league==='string'?league:pick(league,['name','title'],'Football');
-    const state=statusText(match);
-    return `<div class="league">${esc(leagueName)}</div><article class="match"><div class="teams"><div class="team">${esc(teamName(home))}</div><div class="score">${esc(scoreText(match))}</div><div class="team away">${esc(teamName(away))}</div></div><div class="meta"><span class="${isLive(match)?'live':'status'}">${isLive(match)?'● EN DIRECT · ':''}${esc(state)}</span><span>${esc(pick(match,['kickoff','time','date'],' '))}</span></div></article>`;
-  }
-  function renderMatches(data, liveOnly){
-    let matches=getMatches(data);
-    if(liveOnly) matches=matches.filter(isLive);
-    if(!matches.length){
-      const message=liveOnly?'Aucun match en direct n’est renvoyé par le serveur pour le moment.':'Aucun match trouvé dans la réponse du serveur.';
-      return `<div class="notice empty">${esc(message)}<br><span class="small">Tire vers le bas en appuyant sur Actualiser pour réessayer.</span><br><button class="retry" onclick="loadTab(currentTab,document.querySelector('[data-tab=\''+currentTab+'\']'))">Actualiser</button></div>`;
+  const sorted=[...groups.entries()].sort((a,b)=>rankLeague(a[0])-rankLeague(b[0])||a[0].localeCompare(b[0],'fr'));
+  return '<div class="notice"><b>'+(liveOnly?'Matchs en direct':'Matchs du jour')+
+    '</b><div class="muted small">'+matches.length+' match(s) · '+groups.size+' compétition(s)</div></div>'+
+    sorted.map(([name,items],i)=>'<details class="league-group" '+(i<3?'open':'')+'>'+
+    '<summary class="league-head"><span class="league-name">'+esc(name)+'</span>'+
+    '<span class="league-count">'+items.length+' match(s)</span></summary>'+
+    items.map(card).join('')+'</details>').join('');
+}
+function findRows(data){
+  const r=rootOf(data);
+  if(Array.isArray(r))return r;
+  for(const k of ['standings','table','rankings','groups','results']){
+    if(r&&Array.isArray(r[k])){
+      const a=r[k];
+      if(a.length&&(a[0].team||a[0].name||a[0].position||a[0].rank))return a;
+      for(const item of a){
+        if(item&&Array.isArray(item.table))return item.table;
+        if(item&&Array.isArray(item.standings))return item.standings;
+      }
     }
-    return `<div class="notice"><b>${liveOnly?'Matchs en direct':'Matchs reçus'}</b><div class="muted small">${matches.length} match(s)</div></div>`+matches.map(matchCard).join('');
   }
-  function findRows(data){
-    const root=getRoot(data);
-    if(Array.isArray(root)) return root;
-    for(const key of ['standings','table','rankings','groups','results']) if(root && Array.isArray(root[key])){
-      const arr=root[key];
-      if(arr.length && (arr[0].team || arr[0].name || arr[0].position || arr[0].rank)) return arr;
-      for(const item of arr){if(item && Array.isArray(item.table)) return item.table;if(item && Array.isArray(item.standings)) return item.standings;}
-    }
-    if(root && root.data && Array.isArray(root.data.standings)) return root.data.standings;
-    return [];
+  if(r&&r.data&&Array.isArray(r.data.standings))return r.data.standings;
+  return [];
+}
+function renderStandings(data){
+  const rows=findRows(data);
+  if(!rows.length)return '<div class="notice empty"><b>Classement indisponible</b>'+
+    '<p class="small">Le serveur ou le fournisseur ne renvoie pas de tableau exploitable pour le moment.</p>'+
+    '<details class="tech"><summary>Voir la réponse technique</summary><pre>'+esc(JSON.stringify(data,null,2))+'</pre></details>'+
+    '<button class="retry" onclick="loadTab(\\'standings\\')">Actualiser</button></div>';
+  return '<div class="notice"><b>Classements</b><div class="muted small">'+rows.length+
+    ' équipe(s)</div></div><div class="table-wrap"><table class="standings"><thead><tr>'+
+    '<th>#</th><th>Équipe</th><th>MJ</th><th>V</th><th>N</th><th>D</th><th>Pts</th></tr></thead><tbody>'+
+    rows.map((r,i)=>{
+      const t=r.team||r.club||{};
+      return '<tr><td>'+esc(pick(r,['position','rank','place'],i+1))+'</td>'+
+      '<td>'+esc(teamName(t)||pick(r,['team_name','name'],'Équipe'))+'</td>'+
+      '<td>'+esc(pick(r,['played','matches_played','mp'],'—'))+'</td>'+
+      '<td>'+esc(pick(r,['won','wins','w'],'—'))+'</td>'+
+      '<td>'+esc(pick(r,['drawn','draws','d'],'—'))+'</td>'+
+      '<td>'+esc(pick(r,['lost','losses','l'],'—'))+'</td>'+
+      '<td><b>'+esc(pick(r,['points','pts'],'—'))+'</b></td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+let currentTab='matches';
+async function loadTab(path){
+  currentTab=path;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===path));
+  content.innerHTML='<div class="notice loading">Chargement…</div>';
+  try{
+    const response=await fetch(BASE+'/api/'+path,{headers:{Accept:'application/json'}});
+    const text=await response.text();
+    let data;
+    try{data=JSON.parse(text);}catch(_){throw new Error('Le serveur a renvoyé une réponse invalide.');}
+    if(!response.ok)throw new Error(pick(data,['error','message'],'Erreur HTTP '+response.status));
+    if(path==='standings')content.innerHTML=renderStandings(data);
+    else content.innerHTML=renderMatches(data,path==='live-details');
+  }catch(e){
+    content.innerHTML='<div class="notice"><b>Impossible de charger '+esc(labels[path]||'les données')+
+      '</b><p class="muted">'+esc(e.message||'Vérifie la connexion Internet.')+
+      '</p><button class="retry" onclick="loadTab(\\''+path+'\\')">Réessayer</button></div>';
   }
-  function renderStandings(data){
-    const rows=findRows(data);
-    if(!rows.length) return `<div class="notice empty">Le serveur n’a pas renvoyé de tableau de classement exploitable.<br><span class="small">Vérifie que l’API fournit les classements pour cette compétition.</span><br><details><summary>Voir la réponse technique</summary><pre>${esc(JSON.stringify(data,null,2))}</pre></details><button class="retry" onclick="loadTab('standings',document.querySelector('[data-tab=standings]'))">Actualiser</button></div>`;
-    return `<div class="notice"><b>Classements</b><div class="muted small">${rows.length} équipe(s)</div></div><div class="table-wrap"><table class="standings"><thead><tr><th>#</th><th>Équipe</th><th>MJ</th><th>V</th><th>N</th><th>D</th><th>Pts</th></tr></thead><tbody>${rows.map((r,i)=>{const t=r.team||r.club||{};return `<tr><td>${esc(pick(r,['position','rank','place'],i+1))}</td><td>${esc(teamName(t) || pick(r,['team_name','name'],'Équipe'))}</td><td>${esc(pick(r,['played','matches_played','mp'],'—'))}</td><td>${esc(pick(r,['won','wins','w'],'—'))}</td><td>${esc(pick(r,['drawn','draws','d'],'—'))}</td><td>${esc(pick(r,['lost','losses','l'],'—'))}</td><td><b>${esc(pick(r,['points','pts'],'—'))}</b></td></tr>`;}).join('')}</tbody></table></div>`;
-  }
-  let currentTab='matches';
-  async function loadTab(path, button){
-    currentTab=path;
-    document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===path));
-    content.innerHTML='<div class="notice loading">Chargement…</div>';
-    try{
-      const response=await fetch(BASE+'/api/'+path,{method:'GET',headers:{'Accept':'application/json'}});
-      const text=await response.text();
-      let data;
-      try{data=JSON.parse(text);}catch(_){throw new Error('Le serveur a renvoyé une réponse qui n’est pas au format JSON.');}
-      if(!response.ok){const msg=pick(data,['error','message'],`Erreur HTTP ${response.status}`);throw new Error(msg);}
-      if(path==='standings') content.innerHTML=renderStandings(data);
-      else content.innerHTML=renderMatches(data,path==='live-details');
-    }catch(error){
-      content.innerHTML=`<div class="notice"><b>Impossible de charger ${esc(labels[path]||'les données')}</b><p class="muted">${esc(error.message||'Vérifie la connexion Internet puis réessaie.')}</p><button class="retry" onclick="loadTab('${esc(path)}',document.querySelector('[data-tab=\'${esc(path)}\']'))">Réessayer</button></div>`;
-    }
-  }
-  loadTab('matches',document.querySelector('[data-tab="matches"]'));
+}
+loadTab('matches');
 </script>
 </body>
 </html>
+
