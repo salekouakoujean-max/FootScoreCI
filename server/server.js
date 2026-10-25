@@ -1,12 +1,12 @@
+
 import express from 'express';
 
 const app = express();
 app.use(express.json());
 
-// Autoriser l'application Android à communiquer avec le serveur
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
@@ -18,31 +18,66 @@ app.use((req, res, next) => {
 
 const PORT = process.env.PORT || 8080;
 const KEY = process.env.FOOTBALL_API_KEY;
-const upstream = 'https://live-football-api.com/api/v1';
+const UPSTREAM = 'https://live-football-api.com/api/v1';
 
 async function proxy(path, res) {
   if (!KEY) {
-    return res.status(503).json({ error: 'FOOTBALL_API_KEY not configured' });
+    return res.status(503).json({
+      error: 'FOOTBALL_API_KEY is not configured'
+    });
   }
 
   try {
-    const r = await fetch(upstream + path, {
-      headers: { 'Authorization': `Bearer ${KEY}` }
+    const response = await fetch(UPSTREAM + path, {
+      headers: {
+        Authorization: `Bearer ${KEY}`,
+        Accept: 'application/json'
+      }
     });
 
-    const text = await r.text();
-    res.status(r.status)
-      .type(r.headers.get('content-type') || 'application/json')
-      .send(text);
-  } catch (e) {
-    res.status(502).json({ error: 'upstream unavailable' });
+    const body = await response.text();
+
+    let data;
+    try {
+      data = JSON.parse(body);
+    } catch {
+      return res.status(502).json({
+        error: 'The football data provider returned invalid JSON'
+      });
+    }
+
+    return res.status(response.status).json(data);
+  } catch (error) {
+    console.error('Football API error:', error.message);
+
+    return res.status(502).json({
+      error: 'Unable to contact the football data provider'
+    });
   }
 }
 
-app.get('/api/health', (q, r) => r.json({ ok: true, service: 'FootScore CI' }));
-app.get('/api/matches', (q, r) => proxy('/matches', r));
-app.get('/api/live-details', (q, r) => proxy('/live-details', r));
-app.get('/api/standings', (q, r) => proxy('/standings', r));
+app.get('/api/health', (req, res) => {
+  res.json({
+    ok: true,
+    service: 'FootScore CI'
+  });
+});
 
-app.listen(PORT, () => console.log(`FootScore CI server on ${PORT}`));
+// Matchs du jour : conserver la route qui fonctionne déjà.
+app.get('/api/matches', (req, res) => {
+  proxy('/matches', res);
+});
 
+// L'application filtre les matchs en cours à partir des matchs reçus.
+app.get('/api/live-details', (req, res) => {
+  proxy('/matches', res);
+});
+
+// Classement actuel de la Premier League anglaise.
+app.get('/api/standings', (req, res) => {
+  proxy('/league_standings?league_id=lfa-premier-league&lang=en', res);
+});
+
+app.listen(PORT, () => {
+  console.log(`FootScore CI server on port ${PORT}`);
+});
