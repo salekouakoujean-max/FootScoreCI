@@ -170,7 +170,7 @@ function renderStandings(data){
   if(!rows.length)return '<div class="notice empty"><b>Classement indisponible</b>'+
     '<p class="small">Le serveur ou le fournisseur ne renvoie pas de tableau exploitable pour le moment.</p>'+
     '<details class="tech"><summary>Voir la réponse technique</summary><pre>'+esc(JSON.stringify(data,null,2))+'</pre></details>'+
-    '<button class="retry" onclick="loadTab(\\'standings\\')">Actualiser</button></div>';
+    '<button class="retry" onclick="loadTab(&quot;standings&quot;)">Actualiser</button></div>';
   return '<div class="notice"><b>Classements</b><div class="muted small">'+rows.length+
     ' équipe(s)</div></div><div class="table-wrap"><table class="standings"><thead><tr>'+
     '<th>#</th><th>Équipe</th><th>MJ</th><th>V</th><th>N</th><th>D</th><th>Pts</th></tr></thead><tbody>'+
@@ -199,10 +199,15 @@ async function loadTab(path){
     if(path==='standings')content.innerHTML=renderStandings(data);
     else content.innerHTML=renderMatches(data,path==='live-details');
   }catch(e){
-    content.innerHTML='<div class="notice"><b>Impossible de charger '+esc(labels[path]||'les données')+
+    
+      content.innerHTML='<div class="notice"><b>Impossible de charger '+esc(labels[path]||'les données')+
       '</b><p class="muted">'+esc(e.message||'Vérifie la connexion Internet.')+
-      '</p><button class="retry" onclick="loadTab(\\''+path+'\\')">Réessayer</button></div>';
+      '</p><button class="retry" onclick="loadTab(&quot;'+path+'&quot;)">Réessayer</button></div>';
   }
+
+      
+      
+  
 }
 loadTab('matches');
 </script>
