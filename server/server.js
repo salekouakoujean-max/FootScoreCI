@@ -1,7 +1,7 @@
-
 import express from 'express';
 
 const app = express();
+
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -26,13 +26,16 @@ const TIMEOUT_MS = 15000;
 
 async function proxy(path, res) {
   if (!KEY) {
-    return res.status(503).json({
-      error: 'FOOTBALL_API_KEY is not configured'
+    return res.status(500).json({
+      error: 'Football API key is missing'
     });
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timeout = setTimeout(
+    () => controller.abort(),
+    TIMEOUT_MS
+  );
 
   try {
     const url = new URL(UPSTREAM + path);
@@ -53,9 +56,8 @@ async function proxy(path, res) {
       data = JSON.parse(body);
     } catch {
       console.error('Invalid JSON from football provider');
-
       return res.status(502).json({
-        error: 'The football data provider returned invalid JSON'
+        error: 'The football provider returned invalid JSON'
       });
     }
 
@@ -65,26 +67,23 @@ async function proxy(path, res) {
         response.status,
         data
       );
-
       return res.status(response.status).json(data);
     }
 
     return res.status(200).json(data);
-
   } catch (error) {
     console.error('Football API error:', error.message);
 
     if (error.name === 'AbortError') {
       return res.status(504).json({
-        error: 'The football data provider took too long to respond',
+        error: 'The football provider took too long to respond',
         retryable: true
       });
     }
 
     return res.status(502).json({
-      error: 'Unable to contact the football data provider'
+      error: 'Unable to contact the football provider'
     });
-
   } finally {
     clearTimeout(timeout);
   }
