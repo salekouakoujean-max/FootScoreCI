@@ -1,216 +1,158 @@
-
 <!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#071b35">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071426">
 <title>FootScore CI</title>
 <style>
-:root{--navy:#071b35;--blue:#1265d8;--bg:#eef2f7;--text:#152238;--muted:#6b778c;--red:#d9303e;--line:#e4e9f1}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
-header{background:linear-gradient(135deg,#071b35,#123f77);color:white;padding:22px 17px 18px}
-.top{max-width:960px;margin:auto;display:flex;align-items:center;gap:12px}
-.ball{font-size:35px}
-header h1{font-size:25px;margin:0 0 5px}
-header p{margin:0;color:#d7e7ff;font-size:14px}
-main{max-width:960px;margin:auto;padding:14px}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:5px;margin-bottom:12px}
-.tabs button{flex:0 0 auto;border:1px solid var(--line);border-radius:10px;padding:11px 15px;background:white;color:#344054;font-weight:700;font-size:14px}
-.tabs button.active{background:var(--blue);border-color:var(--blue);color:white}
-.notice{background:white;border-radius:12px;padding:14px;margin:10px 0;box-shadow:0 2px 6px #0b1e3710}
-.muted{color:var(--muted)}
-.small{font-size:12px}
-.loading,.empty{text-align:center;padding:24px;color:var(--muted)}
-.league-group{background:#fff;border-radius:12px;margin:11px 0;overflow:hidden;box-shadow:0 2px 6px #0b1e370c}
-.league-head{display:flex;align-items:center;gap:10px;padding:13px 14px;background:#f9fbfe;border-bottom:1px solid var(--line);font-weight:700;cursor:pointer;list-style:none}
-.league-head::-webkit-details-marker{display:none}
-.league-head:after{content:'⌄';margin-left:auto;color:var(--muted);font-size:18px}
-.league-group[open]>.league-head:after{content:'⌃'}
-.league-name{flex:1}
-.league-count{font-size:11px;color:var(--muted);font-weight:600}
-.match{padding:13px 12px;border-bottom:1px solid #edf0f5}
-.match:last-child{border-bottom:0}
-.match-top{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:11px;color:var(--muted);margin-bottom:10px}
-.live-pill{color:var(--red);font-weight:800}
-.teams{display:grid;grid-template-columns:minmax(0,1fr) 72px minmax(0,1fr);gap:8px;align-items:center}
-.team{font-weight:700;font-size:14px;overflow-wrap:anywhere}
-.team.away{text-align:right}
-.score{text-align:center;font-size:19px;font-weight:800;white-space:nowrap}
-.table-wrap{overflow-x:auto}
-.standings{width:100%;border-collapse:collapse;background:#fff;font-size:13px}
-.standings th,.standings td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
-.standings th{background:#f0f5ff}
-.standings td:first-child,.standings th:first-child{text-align:center}
-.retry{background:var(--blue);color:#fff;border:0;border-radius:9px;padding:10px 14px;margin-top:10px;font-size:14px;font-weight:700}
-details.tech{margin-top:12px}
-details.tech pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px}
-@media(min-width:650px){main{padding:20px}.match{padding:15px 18px}.team{font-size:15px}}
+:root{--bg:#071426;--panel:#10243b;--panel2:#152d48;--green:#25d18a;--text:#f4f8fc;--muted:#9db0c5;--line:#223a54;--red:#ff5b68}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,Arial}
+header{padding:22px 18px 17px;background:linear-gradient(135deg,#0b2947,#0b3d43);border-bottom:1px solid #20465b}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:39px;height:39px;border-radius:13px;background:var(--green);color:#062219;display:grid;place-items:center;font-size:23px;font-weight:900}
+h1{font-size:22px;margin:0;font-weight:850;letter-spacing:-.5px}header p{margin:5px 0 0 49px;color:#c4d7e8;font-size:12px}
+.topline{display:flex;justify-content:space-between;align-items:center;margin-top:16px}.livepill{font-size:11px;color:#aef6d6;background:#0c4c3b;border:1px solid #1a7659;border-radius:30px;padding:6px 10px}
+#refresh{border:1px solid #42627d;background:#16334e;color:#fff;border-radius:10px;padding:8px 11px;font-weight:700}
+.tabs{display:flex;gap:7px;padding:12px 12px 8px;overflow:auto;position:sticky;top:0;background:var(--bg);z-index:4}
+.tab{flex:0 0 auto;border:1px solid var(--line);border-radius:11px;padding:10px 14px;background:#10243a;color:#c6d4e2;font-weight:750}
+.tab.active{background:var(--green);border-color:var(--green);color:#06251a}
+main{padding:10px 13px 30px;max-width:760px;margin:auto}
+.summary{display:flex;justify-content:space-between;align-items:center;margin:8px 2px 14px;color:var(--muted);font-size:12px}
+.search{width:100%;background:#0d2035;color:white;border:1px solid var(--line);border-radius:12px;padding:13px;margin:0 0 14px;outline:none}
+.sectiontitle{font-size:14px;font-weight:850;letter-spacing:.2px;margin:17px 3px 10px;display:flex;justify-content:space-between}
+.leaguehead{display:flex;align-items:center;gap:9px;padding:12px 13px;background:#142d47;border-radius:13px 13px 0 0;border-bottom:1px solid #29445f;font-weight:800}
+.flag{width:26px;height:26px;display:grid;place-items:center;background:#203e5b;border-radius:8px;font-size:15px}
+.leaguegroup{margin-bottom:14px;border:1px solid #1d3650;border-radius:14px;overflow:hidden;background:#0d2034}
+.match{display:grid;grid-template-columns:minmax(0,1fr) 70px minmax(0,1fr);align-items:center;gap:8px;padding:13px 10px;border-bottom:1px solid #1b3149}
+.match:last-child{border-bottom:0}.team{font-size:12px;font-weight:700;line-height:1.35;display:flex;align-items:center;gap:6px}.team.home{justify-content:flex-end;text-align:right}.team.away{justify-content:flex-start;text-align:left}
+.teamname{overflow-wrap:anywhere}.badge{width:20px;height:20px;border-radius:50%;object-fit:contain;flex-shrink:0}
+.center{text-align:center}.score{font-size:17px;font-weight:900;letter-spacing:.4px}.matchtime{font-size:10px;color:var(--muted);margin-top:4px}.statuslive{font-size:9px;color:#ff7b84;font-weight:900;margin-top:3px}
+.empty,.loading,.error{padding:24px 12px;text-align:center;color:var(--muted);background:#0d2034;border-radius:14px;line-height:1.5}
+.error{color:#ffc0c4}.retry{margin-top:12px;background:var(--green);border:0;color:#08271c;border-radius:9px;padding:10px 16px;font-weight:800}
+.select{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:#10243b;color:white;margin:5px 0 14px;font-weight:700}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px;background:#0d2034}
+table{width:100%;border-collapse:collapse;min-width:320px;font-size:12px}th{color:var(--muted);font-weight:700;background:#142d47}th,td{padding:12px 8px;text-align:center;border-bottom:1px solid #1b3149}td.club{text-align:left;font-weight:700}td.pos{color:var(--green);font-weight:900}tr:last-child td{border-bottom:0}
+.footer{text-align:center;color:#607b96;font-size:10px;padding:20px}
+.hidden{display:none!important}
 </style>
 </head>
 <body>
 <header>
-  <div class="top">
-    <div class="ball">⚽</div>
-    <div><h1>FootScore CI</h1><p>Les scores et matchs de football</p></div>
-  </div>
+ <div class="brand"><div class="logo">⚽</div><h1>FootScore CI</h1></div>
+ <p>Les matchs. Les scores. Toute la passion.</p>
+ <div class="topline"><span class="livepill">● FOOTBALL EN DIRECT</span><button id="refresh" onclick="refreshCurrent()">↻ Actualiser</button></div>
 </header>
-<main>
-<nav class="tabs" aria-label="Rubriques">
-  <button class="active" data-tab="matches" onclick="loadTab('matches')">Aujourd'hui</button>
-  <button data-tab="live-details" onclick="loadTab('live-details')">🔴 Direct</button>
-  <button data-tab="standings" onclick="loadTab('standings')">Classements</button>
+<nav class="tabs">
+ <button class="tab active" data-view="today" onclick="switchView('today')">Aujourd'hui</button>
+ <button class="tab" data-view="live" onclick="switchView('live')">🔴 Direct</button>
+ <button class="tab" data-view="leagues" onclick="switchView('leagues')">Compétitions</button>
+ <button class="tab" data-view="standings" onclick="switchView('standings')">Classements</button>
 </nav>
-<div id="content" aria-live="polite"><div class="notice loading">Chargement des matchs…</div></div>
+<main>
+ <div class="summary"><span id="subtitle">Les rencontres du jour</span><span id="count"></span></div>
+ <section id="matchesView">
+  <input class="search" id="search" placeholder="🔎 Rechercher une équipe ou compétition" oninput="renderMatches()">
+  <div id="matches" class="loading">Chargement des matchs…</div>
+ </section>
+ <section id="leaguesView" class="hidden">
+  <div class="sectiontitle">Compétitions disponibles <span>⚽</span></div>
+  <div id="leagues" class="loading">Chargement des compétitions…</div>
+ </section>
+ <section id="standingsView" class="hidden">
+  <div class="sectiontitle">Classement de la compétition</div>
+  <select id="leagueSelect" class="select" onchange="loadStandings()"><option value="">Chargement des ligues…</option></select>
+  <div id="table" class="loading">Choisis une compétition.</div>
+ </section>
+ <div class="footer">FootScore CI • Données selon disponibilité du fournisseur</div>
 </main>
 <script>
-const BASE='https://footscore-ci-server.onrender.com';
-const content=document.getElementById('content');
-const labels={matches:'les matchs',"live-details":'les matchs en direct',standings:'les classements'};
-const leagueOrder=['Premier League','Bundesliga','La Liga','Serie A','Ligue 1','Champions League','Europa League','Conference League'];
-
-function esc(v){
-  return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const SERVER='https://footscore-ci-server.onrender.com';
+let allMatches=[],leagues=[],view='today',loadingMatches=false;
+const $=id=>document.getElementById(id);
+function switchView(v){
+ view=v;
+ document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
+ $('matchesView').classList.toggle('hidden',v!=='today'&&v!=='live');
+ $('leaguesView').classList.toggle('hidden',v!=='leagues');
+ $('standingsView').classList.toggle('hidden',v!=='standings');
+ $('subtitle').textContent={today:'Les rencontres du jour',live:'Rencontres en direct',leagues:'Toutes les compétitions',standings:'Classements officiels'}[v];
+ if(v==='leagues')renderLeagues();
+ if(v==='standings'&&!$('leagueSelect').value)loadLeagues(true);
+ renderMatches();
 }
-function pick(o,keys,f=''){
-  for(const k of keys)if(o&&o[k]!==undefined&&o[k]!==null&&o[k]!=='')return o[k];
-  return f;
+function textOf(v,fallback='—'){return v===null||v===undefined||v===''?fallback:String(v)}
+function matchName(m,side){return m[side+'Team']?.name||m[side+'_team']||m[side+' team']||m[side]?.name||textOf(m[side+'TeamName'],side==='home'?'Domicile':'Extérieur')}
+function leagueName(m){return m.league?.name||m.competition?.name||m.league_name||m.competition_name||m.league||'Autres matchs'}
+function statusOf(m){return String(m.status||m.match_status||m.time||'').toUpperCase()}
+function isLive(m){return /LIVE|IN.?PLAY|1H|2H|HT|HALF|MINUTE/.test(statusOf(m))||m.is_live===true}
+function scoreOf(m,side){return m.score?.fullTime?.[side]??m.score?.[side]??m[side+'Score']??m[side+'_score']??m.goals?.[side]??'-'}
+function kickoff(m){return m.kickoff||m.date||m.start_time||m.match_date||m.time||statusOf(m)}
+function renderMatches(){
+ const root=$('matches');if(!allMatches.length){root.className='empty';root.textContent='Aucune rencontre reçue pour le moment.';$('count').textContent='';return}
+ let arr=allMatches.filter(m=>view!=='live'||isLive(m));
+ const q=$('search').value.toLowerCase().trim();
+ if(q)arr=arr.filter(m=>(matchName(m,'home')+' '+matchName(m,'away')+' '+leagueName(m)).toLowerCase().includes(q));
+ $('count').textContent=arr.length+' match(s)';
+ if(!arr.length){root.className='empty';root.textContent=view==='live'?'Pas de match en direct actuellement.':'Aucun match ne correspond à la recherche.';return}
+ const groups={};arr.forEach(m=>(groups[leagueName(m)] ||= []).push(m));
+ root.className='';
+ root.innerHTML='';
+ Object.entries(groups).forEach(([league,matches])=>{
+  const group=document.createElement('div');group.className='leaguegroup';
+  const head=document.createElement('div');head.className='leaguehead';head.innerHTML='<span class="flag">🏆</span><span></span><span style="margin-left:auto;color:#9db0c5;font-size:11px">'+matches.length+'</span>';head.children[1].textContent=league;group.appendChild(head);
+  matches.forEach(m=>{
+   const row=document.createElement('div');row.className='match';
+   const home=document.createElement('div');home.className='team home';home.textContent=matchName(m,'home');
+   const center=document.createElement('div');center.className='center';
+   const score=document.createElement('div');score.className='score';score.textContent=isLive(m)?textOf(scoreOf(m,'home'))+' - '+textOf(scoreOf(m,'away')):(scoreOf(m,'home')==='-'&&scoreOf(m,'away')==='-'?'VS':textOf(scoreOf(m,'home'))+' - '+textOf(scoreOf(m,'away')));
+   const time=document.createElement('div');time.className='matchtime';time.textContent=textOf(kickoff(m),'');
+   center.append(score,time);
+   if(isLive(m)){const live=document.createElement('div');live.className='statuslive';live.textContent='EN DIRECT';center.appendChild(live)}
+   const away=document.createElement('div');away.className='team away';away.textContent=matchName(m,'away');
+   row.append(home,center,away);group.appendChild(row);
+  });root.appendChild(group);
+ });
 }
-function rootOf(d){return d&&d.data!==undefined?d.data:d;}
-function getMatches(d){
-  const r=rootOf(d);
-  if(Array.isArray(r))return r;
-  for(const k of ['matches','fixtures','events','results'])if(r&&Array.isArray(r[k]))return r[k];
-  if(r&&r.data&&Array.isArray(r.data.matches))return r.data.matches;
-  return [];
+async function loadMatches(){
+ if(loadingMatches)return;loadingMatches=true;$('matches').className='loading';$('matches').textContent='Actualisation des scores…';
+ try{const r=await fetch(SERVER+'/api/matches');if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();allMatches=d.data?.matches||d.matches||d.data||[];if(!Array.isArray(allMatches))allMatches=[];renderMatches()}
+ catch(e){$('matches').className='error';$('matches').textContent='Les scores sont temporairement indisponibles. Vérifie la connexion puis actualise.'}
+ finally{loadingMatches=false}
 }
-function teamObj(m,side){
-  return m[side]||m[side+'_team']||m[side+'Team']||{};
+async function loadLeagues(forSelect=false){
+ try{const r=await fetch(SERVER+'/api/leagues');if(!r.ok)throw Error();const d=await r.json();leagues=d.data?.leagues||d.leagues||d.data||[];if(!Array.isArray(leagues))leagues=[];if(forSelect)fillSelect();renderLeagues()}
+ catch(e){$('leagues').className='error';$('leagues').textContent='Liste des compétitions momentanément indisponible.';if(forSelect){$('leagueSelect').innerHTML='<option value="lfa-premier-league">Premier League</option>';}}
 }
-function teamName(t){
-  if(typeof t==='string')return t;
-  return pick(t,['name','short_name','shortName','title','team_name'],'Équipe');
+function leagueId(l){return l.id||l.league_id||l.slug||''}
+function leagueLabel(l){return l.name||l.title||l.league_name||'Compétition'}
+function fillSelect(){
+ const s=$('leagueSelect');const old=s.value;s.innerHTML='';
+ if(!leagues.length){s.innerHTML='<option value="lfa-premier-league">Premier League</option>';return}
+ leagues.forEach(l=>{const id=leagueId(l);if(!id)return;const o=document.createElement('option');o.value=id;o.textContent=leagueLabel(l);s.appendChild(o)});
+ if(old&&[...s.options].some(o=>o.value===old))s.value=old;
+ if(s.value)loadStandings();
 }
-function scoreText(m){
-  const h=teamObj(m,'home'),a=teamObj(m,'away');
-  const hs=pick(h,['score','goals'],pick(m,['home_score','homeScore'],null));
-  const as=pick(a,['score','goals'],pick(m,['away_score','awayScore'],null));
-  return hs===null||as===null?'—':hs+' - '+as;
+function renderLeagues(){
+ const root=$('leagues');if(!leagues.length){root.className='empty';root.textContent='La liste sera affichée dès que le fournisseur répondra.';return}
+ root.className='';root.innerHTML='';
+ leagues.forEach(l=>{const b=document.createElement('button');b.className='select';b.textContent='🏆  '+leagueLabel(l);b.onclick=()=>{switchView('standings');$('leagueSelect').value=leagueId(l);loadStandings()};root.appendChild(b)})
 }
-function statusText(m){
-  const s=m.status;
-  if(s&&typeof s==='object')return pick(s,['display','status','state','short'],'Programmé');
-  return s||m.time||m.kickoff||'Programmé';
+async function loadStandings(){
+ const id=$('leagueSelect').value;if(!id)return;
+ const root=$('table');root.className='loading';root.textContent='Récupération du classement…';
+ try{
+  const r=await fetch(SERVER+'/api/standings?league_id='+encodeURIComponent(id));if(!r.ok)throw Error();
+  const d=await r.json();const lists=d.data?.standings||d.standings||d.data?.table||d.table||[];
+  const standings=Array.isArray(lists)?lists[0]:lists;
+  const rows=standings?.table||standings?.teams||standings?.standings||[];
+  if(!Array.isArray(rows)||!rows.length)throw Error('empty');
+  root.className='tablewrap';root.innerHTML='<table><thead><tr><th>#</th><th style="text-align:left">Équipe</th><th>MJ</th><th>V</th><th>N</th><th>D</th><th>Pts</th></tr></thead><tbody></tbody></table>';
+  const body=root.querySelector('tbody');
+  rows.forEach((item,i)=>{const t=item.team||item;const tr=document.createElement('tr');const vals=[item.rank??item.position??i+1,t.name||t.team_name||item.name||'Club',item.played??item.matches_played??item.played_matches??0,item.won??item.wins??0,item.drawn??item.draws??0,item.lost??item.losses??0,item.points??item.pts??0];vals.forEach((v,j)=>{const td=document.createElement('td');td.textContent=v;if(j===0)td.className='pos';if(j===1)td.className='club';tr.appendChild(td)});body.appendChild(tr)})
+ }catch(e){root.className='error';root.textContent='Le classement n’a pas pu être chargé. Le fournisseur peut être lent ou ne pas fournir cette ligue.'}
 }
-function isLive(m){
-  const s=m.status;
-  return !!(s&&typeof s==='object'&&(s.is_live||s.live))||
-    /live|in.?play|1st half|2nd half|half time|mi-temps|1ère mi-temps|2ème mi-temps/i.test(String(typeof s==='object'?statusText(m):s||''));
-}
-function leagueName(m){
-  const l=m.league||m.competition||m.tournament||m.league_name;
-  return typeof l==='string'?l:pick(l,['name','title','competition_name'],'Autres matchs');
-}
-function rankLeague(name){
-  const n=String(name).toLowerCase();
-  const i=leagueOrder.findIndex(x=>n.includes(x.toLowerCase()));
-  return i<0?100:i;
-}
-function card(m){
-  const live=isLive(m);
-  const time=pick(m,['kickoff','time','date','start_time'],'');
-  return '<article class="match">'+
-    '<div class="match-top"><span class="'+(live?'live-pill':'')+'">'+
-    (live?'● EN DIRECT · ':'')+esc(statusText(m))+'</span><span>'+esc(time)+'</span></div>'+
-    '<div class="teams"><div class="team">'+esc(teamName(teamObj(m,'home')))+'</div>'+
-    '<div class="score">'+esc(scoreText(m))+'</div>'+
-    '<div class="team away">'+esc(teamName(teamObj(m,'away')))+'</div></div></article>';
-}
-function renderMatches(data,liveOnly){
-  let matches=getMatches(data);
-  if(liveOnly)matches=matches.filter(isLive);
-  if(!matches.length){
-    return '<div class="notice empty">'+
-      (liveOnly?'Aucun match en direct trouvé pour le moment.':'Aucun match trouvé dans la réponse du serveur.')+
-      '<br><button class="retry" onclick="loadTab(currentTab)">Actualiser</button></div>';
-  }
-  const groups=new Map();
-  for(const m of matches){
-    const name=leagueName(m);
-    if(!groups.has(name))groups.set(name,[]);
-    groups.get(name).push(m);
-  }
-  const sorted=[...groups.entries()].sort((a,b)=>rankLeague(a[0])-rankLeague(b[0])||a[0].localeCompare(b[0],'fr'));
-  return '<div class="notice"><b>'+(liveOnly?'Matchs en direct':'Matchs du jour')+
-    '</b><div class="muted small">'+matches.length+' match(s) · '+groups.size+' compétition(s)</div></div>'+
-    sorted.map(([name,items],i)=>'<details class="league-group" '+(i<3?'open':'')+'>'+
-    '<summary class="league-head"><span class="league-name">'+esc(name)+'</span>'+
-    '<span class="league-count">'+items.length+' match(s)</span></summary>'+
-    items.map(card).join('')+'</details>').join('');
-}
-function findRows(data){
-  const r=rootOf(data);
-  if(Array.isArray(r))return r;
-  for(const k of ['standings','table','rankings','groups','results']){
-    if(r&&Array.isArray(r[k])){
-      const a=r[k];
-      if(a.length&&(a[0].team||a[0].name||a[0].position||a[0].rank))return a;
-      for(const item of a){
-        if(item&&Array.isArray(item.table))return item.table;
-        if(item&&Array.isArray(item.standings))return item.standings;
-      }
-    }
-  }
-  if(r&&r.data&&Array.isArray(r.data.standings))return r.data.standings;
-  return [];
-}
-function renderStandings(data){
-  const rows=findRows(data);
-  if(!rows.length)return '<div class="notice empty"><b>Classement indisponible</b>'+
-    '<p class="small">Le serveur ou le fournisseur ne renvoie pas de tableau exploitable pour le moment.</p>'+
-    '<details class="tech"><summary>Voir la réponse technique</summary><pre>'+esc(JSON.stringify(data,null,2))+'</pre></details>'+
-    '<button class="retry" onclick="loadTab(&quot;standings&quot;)">Actualiser</button></div>';
-  return '<div class="notice"><b>Classements</b><div class="muted small">'+rows.length+
-    ' équipe(s)</div></div><div class="table-wrap"><table class="standings"><thead><tr>'+
-    '<th>#</th><th>Équipe</th><th>MJ</th><th>V</th><th>N</th><th>D</th><th>Pts</th></tr></thead><tbody>'+
-    rows.map((r,i)=>{
-      const t=r.team||r.club||{};
-      return '<tr><td>'+esc(pick(r,['position','rank','place'],i+1))+'</td>'+
-      '<td>'+esc(teamName(t)||pick(r,['team_name','name'],'Équipe'))+'</td>'+
-      '<td>'+esc(pick(r,['played','matches_played','mp'],'—'))+'</td>'+
-      '<td>'+esc(pick(r,['won','wins','w'],'—'))+'</td>'+
-      '<td>'+esc(pick(r,['drawn','draws','d'],'—'))+'</td>'+
-      '<td>'+esc(pick(r,['lost','losses','l'],'—'))+'</td>'+
-      '<td><b>'+esc(pick(r,['points','pts'],'—'))+'</b></td></tr>';
-    }).join('')+'</tbody></table></div>';
-}
-let currentTab='matches';
-async function loadTab(path){
-  currentTab=path;
-  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===path));
-  content.innerHTML='<div class="notice loading">Chargement…</div>';
-  try{
-    const response=await fetch(BASE+'/api/'+path,{headers:{Accept:'application/json'}});
-    const text=await response.text();
-    let data;
-    try{data=JSON.parse(text);}catch(_){throw new Error('Le serveur a renvoyé une réponse invalide.');}
-    if(!response.ok)throw new Error(pick(data,['error','message'],'Erreur HTTP '+response.status));
-    if(path==='standings')content.innerHTML=renderStandings(data);
-    else content.innerHTML=renderMatches(data,path==='live-details');
-  }catch(e){
-    
-      content.innerHTML='<div class="notice"><b>Impossible de charger '+esc(labels[path]||'les données')+
-      '</b><p class="muted">'+esc(e.message||'Vérifie la connexion Internet.')+
-      '</p><button class="retry" onclick="loadTab(&quot;'+path+'&quot;)">Réessayer</button></div>';
-  }
-
-      
-      
-  
-}
-loadTab('matches');
+function refreshCurrent(){if(view==='standings')loadStandings();else if(view==='leagues')loadLeagues();else loadMatches()}
+loadMatches();loadLeagues();
 </script>
 </body>
 </html>
-
