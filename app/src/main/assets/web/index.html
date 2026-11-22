@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FootScore CI</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #071b35;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: #0c2b50;
+  text-align: center;
+  padding: 22px 12px;
+}
+
+h1 {
+  margin: 0;
+  color: #48d597;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+}
+
+button {
+  flex: 1;
+  padding: 13px;
+  border: none;
+  border-radius: 9px;
+  background: #17436c;
+  color: white;
+  font-weight: bold;
+}
+
+button.active {
+  background: #20a66b;
+}
+
+main {
+  padding: 12px;
+}
+
+.match {
+  background: #123457;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.score {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 12px;
+}
+
+.muted {
+  color: #b8cadd;
+}
+
+.error {
+  color: #ffb4a8;
+  text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>⚽ FootScore CI</h1>
+  <p class="muted">Les scores du football</p>
+</header>
+
+<nav>
+  <button id="today" class="active" onclick="showMatches('today')">
+    Aujourd'hui
+  </button>
+
+  <button id="live" onclick="showMatches('live')">
+    Direct
+  </button>
+</nav>
+
+<main>
+  <p id="status" class="muted">Chargement des matchs...</p>
+  <div id="matches"></div>
+</main>
+
+<script>
+const SERVER = "https://footscore-ci-server.onrender.com";
+
+let allMatches = [];
+let currentMode = "today";
+
+function showMatches(mode) {
+  currentMode = mode;
+
+  document.getElementById("today").classList.toggle(
+    "active", mode === "today"
+  );
+
+  document.getElementById("live").classList.toggle(
+    "active", mode === "live"
+  );
+
+  renderMatches();
+}
+
+function renderMatches() {
+  const container = document.getElementById("matches");
+  container.innerHTML = "";
+
+  let matches = allMatches;
+
+  if (currentMode === "live") {
+    matches = allMatches.filter(match =>
+      ["LIVE", "IN_PLAY", "1H", "2H", "HT"].includes(match.status)
+    );
+  }
+
+  if (matches.length === 0) {
+    container.textContent =
+      currentMode === "live"
+      ? "Aucun match en direct pour le moment."
+      : "Aucun match disponible.";
+    return;
+  }
+
+  matches.forEach(match => {
+    const card = document.createElement("div");
+    card.className = "match";
+
+    const home = match.homeTeam?.name || match.home_team || "Domicile";
+    const away = match.awayTeam?.name || match.away_team || "Extérieur";
+
+    const homeScore =
+      match.score?.fullTime?.home ?? match.homeScore ?? "-";
+
+    const awayScore =
+      match.score?.fullTime?.away ?? match.awayScore ?? "-";
+
+    const teams = document.createElement("strong");
+    teams.textContent = home + " — " + away;
+
+    const score = document.createElement("div");
+    score.className = "score";
+    score.textContent = homeScore + " : " + awayScore;
+
+    const status = document.createElement("p");
+    status.className = "muted";
+    status.textContent = match.status || match.date || "";
+
+    card.appendChild(teams);
+    card.appendChild(score);
+    card.appendChild(status);
+
+    container.appendChild(card);
+  });
+}
+
+async function loadMatches() {
+  const status = document.getElementById("status");
+
+  try {
+    const response = await fetch(SERVER + "/api/matches");
+
+    if (!response.ok) {
+      throw new Error("Erreur serveur");
+    }
+
+    const data = await response.json();
+
+    allMatches = data.data?.matches || data.matches || [];
+
+    status.textContent = "";
+    renderMatches();
+
+  } catch (error) {
+    status.textContent =
+      "Impossible de charger les matchs. Vérifie ta connexion.";
+    status.className = "error";
+
+    const retry = document.createElement("button");
+    retry.textContent = "Réessayer";
+    retry.onclick = loadMatches;
+
+    document.getElementById("matches").appendChild(retry);
+  }
+}
+
+loadMatches();
+</script>
+
+</body>
+</html>
